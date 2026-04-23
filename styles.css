@@ -1,0 +1,234 @@
+:root {
+  --bg: #0f1116;
+  --panel: #151922;
+  --panel-2: #1b2130;
+  --border: #2b3346;
+  --text: #d7deed;
+  --muted: #9aa7c2;
+  --accent: #4f8cff;
+  --accent-soft: rgba(79, 140, 255, 0.22);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", Inter, Arial, sans-serif;
+}
+
+.app {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 240px 1fr 56px;
+  grid-template-rows: 56px 1fr 220px;
+  grid-template-areas:
+    "sidebar topbar stats"
+    "sidebar main stats"
+    "sidebar bottom stats";
+  gap: 10px;
+  padding: 10px;
+}
+
+.sidebar {
+  grid-area: sidebar;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.explorer-toggle,
+.menu button {
+  width: 100%;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  padding: 9px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+.explorer-toggle:hover,
+.menu button:hover {
+  border-color: var(--accent);
+  background: rgba(79, 140, 255, 0.08);
+  box-shadow: 0 0 10px var(--accent-soft);
+}
+
+.file-list {
+  margin: 8px 0 0;
+  padding-left: 16px;
+  color: var(--muted);
+  display: grid;
+  gap: 4px;
+}
+
+.menu {
+  display: grid;
+  gap: 6px;
+}
+
+.topbar {
+  grid-area: topbar;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 16px;
+  letter-spacing: 0.2px;
+}
+
+.topbar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.topbar-actions button {
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 7px 10px;
+  cursor: pointer;
+}
+
+.topbar-actions button:hover {
+  border-color: var(--accent);
+}
+
+.main {
+  grid-area: main;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.editor-wrap {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 54px 1fr;
+}
+
+.line-numbers {
+  background: #111521;
+  color: var(--muted);
+  border-right: 1px solid var(--border);
+  padding: 12px 10px;
+  font: 13px/1.6 Consolas, "Courier New", monospace;
+  text-align: right;
+  user-select: none;
+  overflow: hidden;
+}
+
+.code-editor {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: none;
+  resize: none;
+  background: #0f1420;
+  color: var(--text);
+  padding: 12px;
+  font: 14px/1.6 Consolas, "Courier New", monospace;
+}
+
+.stats-strip {
+  grid-area: stats;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.stat-item {
+  width: 100%;
+  text-align: center;
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.stat-item span {
+  font-size: 14px;
+}
+
+.stat-item strong {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.bottom-panel {
+  grid-area: bottom;
+  background: #10141f;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 8px 8px 0;
+  border-bottom: 1px solid var(--border);
+  background: #131929;
+}
+
+.tab {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  padding: 7px 10px;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+}
+
+.tab.active {
+  color: var(--text);
+  background: #0f1420;
+  border-color: var(--border);
+  border-bottom-color: #0f1420;
+}
+
+.tab-content {
+  flex: 1;
+  padding: 12px;
+  color: #c9d4ea;
+  overflow: auto;
+  font: 13px/1.5 Consolas, "Courier New", monospace;
+}
+
+.output-content {
+  color: #d6e2fa;
+}
+
+.ai-content {
+  color: #cfd8ea;
+}
