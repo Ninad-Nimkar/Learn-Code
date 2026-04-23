@@ -1,71 +1,216 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GhostScreen</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CodeLearn — A minimal, dark-themed code editor UI.">
+  <title>CodeLearn</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👻</text></svg>">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
   <div class="app">
-    <aside class="sidebar">
-      <section class="explorer">
-        <button class="explorer-toggle" type="button">Explorer</button>
-        <ul class="file-list">
-          <li>main.py</li>
-          <li>utils.py</li>
-          <li>app.js</li>
-        </ul>
-      </section>
 
-      <nav class="menu">
-        <button type="button">Code Editor</button>
-        <button type="button">Terminal</button>
-        <button type="button">AI Assistant</button>
-        <button type="button">History</button>
-        <button type="button">Stats</button>
-        <button type="button">Settings</button>
-      </nav>
-    </aside>
-
-    <header class="topbar">
-      <h1>GhostScreen</h1>
-      <div class="topbar-actions">
-        <button type="button">Open</button>
-        <button type="button">Theme</button>
-        <button type="button">Run Code</button>
-        <button type="button">Explain Code</button>
+    <!-- TOP BAR -->
+    <header class="topbar" id="topbar">
+      <div class="topbar__brand">
+        <div class="topbar__icon" aria-hidden="true">👻</div>
+        <h1 class="topbar__title">CodeLearn</h1>
       </div>
+      <nav class="topbar__actions">
+        <button class="topbar__btn" id="btn-clear" title="Clear file"><span>🗑️</span> Clear</button>
+        <button class="topbar__btn" id="btn-download" title="Download file"><span>⬇️</span> Download</button>
+        <button class="topbar__btn topbar__btn--accent" id="btn-theme" title="Toggle theme"><span>🎨</span> Theme</button>
+        <button class="topbar__btn topbar__btn--primary" id="btn-run" title="Run code"><span>▶</span> Run Code</button>
+        <button class="topbar__btn topbar__btn--accent" id="btn-explain" title="Explain code"><span>🤖</span> Explain Code</button>
+      </nav>
     </header>
 
-    <main class="main">
-      <div class="editor-wrap">
-        <div class="line-numbers">1</div>
-        <textarea class="code-editor" spellcheck="false"></textarea>
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar__section-header" id="explorer-toggle" role="button" tabindex="0" aria-expanded="true">
+        <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+          <svg viewBox="0 0 24 24">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+          Explorer
+        </div>
+        <span id="btn-new-file" title="New File" style="font-size: 16px; cursor: pointer; padding: 0 4px;">+</span>
+      </div>
+      <ul class="explorer-files" id="explorer-files">
+        <li class="explorer-files__item is-active" data-file="main.py">
+          <span class="explorer-files__icon file-icon--py">🐍</span><span>main.py</span>
+        </li>
+        <li class="explorer-files__item" data-file="utils.py">
+          <span class="explorer-files__icon file-icon--py">🐍</span><span>utils.py</span>
+        </li>
+        <li class="explorer-files__item" data-file="README.md">
+          <span class="explorer-files__icon file-icon--md">📄</span><span>README.md</span>
+        </li>
+      </ul>
+      <div class="sidebar__divider"></div>
+      <ul class="sidebar__menu" id="sidebar-menu">
+        <li class="sidebar__menu-item is-active" data-view="editor"><span class="sidebar__menu-icon">⌨️</span><span>Code
+            Editor</span></li>
+
+        <li class="sidebar__menu-item" data-view="ai"><span class="sidebar__menu-icon">🤖</span><span>AI
+            Assistant</span></li>
+        <li class="sidebar__menu-item" data-view="history"><span
+            class="sidebar__menu-icon">🕐</span><span>History</span></li>
+        <li class="sidebar__menu-item" data-view="stats"><span class="sidebar__menu-icon">📊</span><span>Stats</span>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- EDITOR AREA -->
+    <main class="editor" id="editor">
+      <div class="editor__tab-bar">
+        <div class="editor__tab is-active" id="editor-tab-main"><span class="editor__tab-icon">🐍</span> main.py</div>
+      </div>
+      <div class="editor__workspace">
+        <div class="line-numbers" id="line-numbers" aria-hidden="true"><span>1</span></div>
+        <div class="code-area">
+          <textarea id="code-textarea" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"
+            placeholder="# Start typing your code here..."></textarea>
+          <pre id="code-highlight" aria-hidden="true"><code class="language-python" id="code-content"></code></pre>
+        </div>
       </div>
     </main>
 
-    <aside class="stats-strip">
-      <div class="stat-item"><span>▶</span><strong>0</strong></div>
-      <div class="stat-item"><span>⚠</span><strong>0</strong></div>
-      <div class="stat-item"><span>✓</span><strong>0%</strong></div>
-      <div class="stat-item"><span>★</span><strong>0</strong></div>
+    <!-- RIGHT STATS STRIP -->
+    <aside class="stats-strip" id="stats-strip">
+      <div class="stat-item stat--runs"><span class="stat-item__icon">▶</span><span class="stat-item__value"
+          id="stat-runs">24</span><span class="stat-item__label">Runs</span></div>
+      <div class="stat-item stat--errors"><span class="stat-item__icon">✕</span><span class="stat-item__value"
+          id="stat-errors">3</span><span class="stat-item__label">Errors</span></div>
+      <div class="stat-item stat--success"><span class="stat-item__icon">✓</span><span class="stat-item__value"
+          id="stat-success">87%</span><span class="stat-item__label">Success</span></div>
+      <div class="stat-item stat--xp"><span class="stat-item__icon">★</span><span class="stat-item__value"
+          id="stat-xp">450</span><span class="stat-item__label">XP</span></div>
+      <div class="stats-strip__spacer"></div>
+      <div class="stats-strip__divider"></div>
+      <button class="stats-strip__action" id="btn-strip-settings" title="Settings">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3" />
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+        </svg>
+        <span class="stats-strip__action-label">Settings</span>
+      </button>
+      <button class="stats-strip__action" id="btn-strip-exit" title="Exit">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+        <span class="stats-strip__action-label">Exit</span>
+      </button>
     </aside>
 
-    <section class="bottom-panel">
-      <div class="tabs">
-        <button class="tab active" type="button">Output / Error</button>
-        <button class="tab" type="button">AI Explanation</button>
+    <!-- BOTTOM PANEL -->
+    <section class="bottom-panel" id="bottom-panel">
+      <div class="bottom-panel__tabs">
+        <div class="bottom-panel__tab is-active" data-tab="output" id="tab-output">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="4 17 10 11 4 5" />
+            <line x1="12" y1="19" x2="20" y2="19" />
+          </svg>
+          Output / Error
+        </div>
+        <div class="bottom-panel__tab" data-tab="ai-explanation" id="tab-ai">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a4 4 0 0 1 4 4v1a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z" />
+            <path d="M16 14h.01" />
+            <path d="M8 14h.01" />
+            <path d="M12 17v1" />
+            <rect x="4" y="10" width="16" height="10" rx="2" />
+          </svg>
+          AI Explanation
+        </div>
       </div>
-
-      <div class="tab-content output-content">
-        <pre></pre>
-      </div>
-
-      <div class="tab-content ai-content" hidden>
-        <p></p>
+      <div class="bottom-panel__content">
+        <div class="tab-content is-visible" id="content-output">
+          <div class="terminal-output" id="terminal-output"><span class="prompt">$</span> Ready. Click <strong>Run
+              Code</strong> to execute.<span class="terminal-cursor"></span></div>
+        </div>
+        <div class="tab-content" id="content-ai">
+          <div style="display: flex; flex-direction: column; height: 100%;">
+            <div class="chat-messages" id="chat-messages" style="flex: 1; overflow-y: auto; padding-bottom: 10px;">
+              <div style="margin-bottom: 8px; color: var(--on-surface-variant); font-size: 13px;"><strong>🤖 AI:</strong> How can I help you today?</div>
+            </div>
+            <div class="chat-input-area" style="display: flex; gap: 8px; padding-top: 8px; border-top: 1px solid rgba(74, 68, 85, 0.25);">
+              <input type="text" id="chat-input" placeholder="Ask AI..." style="flex: 1; background: var(--surface-high); border: 1px solid var(--outline-variant); color: var(--on-surface); border-radius: var(--r-sm); padding: 6px 12px; outline: none; font-family: var(--font-ui); font-size: 13px;">
+              <button id="btn-chat-send" style="background: var(--primary-container); color: #fff; border: none; border-radius: var(--r-sm); padding: 6px 16px; cursor: pointer; font-weight: 500; font-size: 12px;">Send</button>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
+
+  </div>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script>
+    // Initialize Firebase
+    firebase.initializeApp({
+      apiKey: "AIzaSyDummyKeyHere",
+      authDomain: "learncode-97863.firebaseapp.com",
+      databaseURL: "https://learncode-97863-default-rtdb.firebaseio.com",
+      projectId: "learncode-97863",
+      storageBucket: "learncode-97863.appspot.com",
+      messagingSenderId: "000000000000",
+      appId: "1:000000000000:web:0000000000000000"
+    });
+    window.db = firebase.firestore();
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <div id="context-menu" class="context-menu" style="display: none; position: absolute; z-index: 1000; background: var(--surface-high); border: 1px solid var(--outline-variant); border-radius: var(--r-sm); padding: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+    <div class="context-menu__item" id="ctx-rename" style="padding: 6px 12px; cursor: pointer; color: var(--on-surface); font-size: 12px; border-radius: 4px;">Rename</div>
+    <div class="context-menu__item" id="ctx-delete" style="padding: 6px 12px; cursor: pointer; color: var(--error); font-size: 12px; border-radius: 4px;">Delete</div>
+  </div>
+
+  <!-- STATS MODAL -->
+  <div class="modal-overlay" id="stats-modal">
+    <div class="modal">
+      <div class="modal__header">
+        <h2 class="modal__title">Your Learning Stats</h2>
+        <button class="modal__close" id="btn-close-stats">&times;</button>
+      </div>
+      <div class="modal__content">
+        <div class="stats-grid">
+          <div class="stats-card">
+            <div class="stats-card__icon">▶</div>
+            <div class="stats-card__value" id="modal-stat-runs">0</div>
+            <div class="stats-card__label">Total Runs</div>
+          </div>
+          <div class="stats-card">
+            <div class="stats-card__icon">✕</div>
+            <div class="stats-card__value" id="modal-stat-errors">0</div>
+            <div class="stats-card__label">Total Errors</div>
+          </div>
+          <div class="stats-card">
+            <div class="stats-card__icon">✓</div>
+            <div class="stats-card__value" id="modal-stat-success">0%</div>
+            <div class="stats-card__label">Success Rate</div>
+          </div>
+          <div class="stats-card">
+            <div class="stats-card__icon">★</div>
+            <div class="stats-card__value" id="modal-stat-xp">0</div>
+            <div class="stats-card__label">Total XP</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="script.js"></script>
